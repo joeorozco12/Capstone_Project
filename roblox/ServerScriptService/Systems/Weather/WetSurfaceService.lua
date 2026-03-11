@@ -6,7 +6,23 @@ WetSurfaceService.__index = WetSurfaceService
 function WetSurfaceService.new(weatherManager)
     local self = setmetatable({}, WetSurfaceService)
     self.weatherManager = weatherManager
+    self.originalSurfaceState = {}
     return self
+end
+
+local function cacheOriginalState(cache, part)
+    if cache[part] then
+        return
+    end
+
+    cache[part] = {
+        material = part.Material,
+        reflectance = part.Reflectance,
+    }
+
+    part.Destroying:Connect(function()
+        cache[part] = nil
+    end)
 end
 
 function WetSurfaceService:Apply()
@@ -15,8 +31,17 @@ function WetSurfaceService:Apply()
 
     for _, part in ipairs(CollectionService:GetTagged("WeatherReactive")) do
         if part:IsA("BasePart") then
-            part.Material = isWet and Enum.Material.SmoothPlastic or Enum.Material.Grass
-            part.Reflectance = isWet and 0.12 or 0
+            cacheOriginalState(self.originalSurfaceState, part)
+
+            if isWet then
+                part.Reflectance = math.max(part.Reflectance, 0.12)
+            else
+                local original = self.originalSurfaceState[part]
+                if original then
+                    part.Material = original.material
+                    part.Reflectance = original.reflectance
+                end
+            end
         end
     end
 end

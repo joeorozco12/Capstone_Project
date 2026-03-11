@@ -13,24 +13,32 @@ function LightningSerpentController.new(weatherManager, serpentTemplate)
     self.serpentTemplate = serpentTemplate
     self.activeSerpent = nil
     self.cooldownUntil = 0
+    self.runtimeFolder = Workspace:FindFirstChild("StormRuntime") or Instance.new("Folder")
+    self.runtimeFolder.Name = "StormRuntime"
+    self.runtimeFolder.Parent = Workspace
     return self
 end
 
 function LightningSerpentController:TrySpawn()
     if os.clock() < self.cooldownUntil then
-        return
+        return nil
     end
 
     if self.weatherManager:GetCurrentWeather() ~= "WorldbreakerSupercell" then
-        return
+        return nil
     end
 
-    if self.activeSerpent then
-        return
+    if self.activeSerpent and self.activeSerpent.Parent then
+        return self.activeSerpent
+    end
+
+    if not self.serpentTemplate then
+        warn("LightningSerpentController: serpentTemplate is missing")
+        return nil
     end
 
     self.activeSerpent = self.serpentTemplate:Clone()
-    self.activeSerpent.Parent = Workspace:WaitForChild("StormRuntime")
+    self.activeSerpent.Parent = self.runtimeFolder
     self.activeSerpent:PivotTo(CFrame.new(0, 220, 0))
 
     self.cooldownUntil = os.clock() + 600
@@ -38,6 +46,15 @@ function LightningSerpentController:TrySpawn()
         eventId = "LightningSerpentAppears",
         message = "⚡ The Lightning Serpent descends from the storm!",
     })
+
+    return self.activeSerpent
+end
+
+function LightningSerpentController:DespawnActiveSerpent()
+    if self.activeSerpent and self.activeSerpent.Parent then
+        self.activeSerpent:Destroy()
+    end
+    self.activeSerpent = nil
 end
 
 return LightningSerpentController
