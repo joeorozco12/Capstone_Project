@@ -56,11 +56,9 @@ In `StormSeedService.lua`:
 1. Click **Play** in Studio.
 2. Confirm output shows weather changes from `WeatherClientController.client`.
 3. Confirm parts tagged `WeatherReactive` become reflective during wet weather.
-4. Force weather from command bar for testing:
-   ```lua
-   require(game.ServerScriptService.Systems.Weather.WeatherManager)
-   ```
-   (or temporarily call `weatherManager:SetWeather("Thunderstorm", 120)` in `Main.server`)
+4. Force weather for testing by temporarily changing this line in `Main.server`:
+   - `weatherManager:SetWeather("Drizzle", 90)` -> `weatherManager:SetWeather("Thunderstorm", 120)`
+   Then run Play again.
 
 ## 8) Multiplayer test
 1. Use **Test** → Start with 2–4 players.

@@ -13,10 +13,35 @@ function LightningSerpentController.new(weatherManager, serpentTemplate)
     self.serpentTemplate = serpentTemplate
     self.activeSerpent = nil
     self.cooldownUntil = 0
+    self.nextTemplateRetryAt = 0
+    self.missingTemplateWarned = false
     self.runtimeFolder = Workspace:FindFirstChild("StormRuntime") or Instance.new("Folder")
     self.runtimeFolder.Name = "StormRuntime"
     self.runtimeFolder.Parent = Workspace
     return self
+end
+
+function LightningSerpentController:ResolveTemplate()
+    if self.serpentTemplate and self.serpentTemplate.Parent then
+        return self.serpentTemplate
+    end
+
+    local now = os.clock()
+    if now < self.nextTemplateRetryAt then
+        return nil
+    end
+
+    self.nextTemplateRetryAt = now + 10
+    self.serpentTemplate = ReplicatedStorage:FindFirstChild("LightningSerpentTemplate")
+
+    if not self.serpentTemplate and not self.missingTemplateWarned then
+        warn("LightningSerpentController: LightningSerpentTemplate not found in ReplicatedStorage")
+        self.missingTemplateWarned = true
+    elseif self.serpentTemplate then
+        self.missingTemplateWarned = false
+    end
+
+    return self.serpentTemplate
 end
 
 function LightningSerpentController:TrySpawn()
@@ -32,12 +57,12 @@ function LightningSerpentController:TrySpawn()
         return self.activeSerpent
     end
 
-    if not self.serpentTemplate then
-        warn("LightningSerpentController: serpentTemplate is missing")
+    local template = self:ResolveTemplate()
+    if not template then
         return nil
     end
 
-    self.activeSerpent = self.serpentTemplate:Clone()
+    self.activeSerpent = template:Clone()
     self.activeSerpent.Parent = self.runtimeFolder
     self.activeSerpent:PivotTo(CFrame.new(0, 220, 0))
 

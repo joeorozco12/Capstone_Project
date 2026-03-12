@@ -7,10 +7,13 @@ All notable changes to this repository are documented in this file.
 ### Added
 - Initial complete design foundation document for **Storm Chasers: World Break** including gameplay, systems, monetization, architecture, MVP plan, and art direction.
 - Initial Roblox Luau starter modules for weather, creatures, monetization hooks, client weather event handling, and profile data model.
-### Added
 - Roblox Studio implementation guide with step-by-step setup, remote requirements, monetization configuration, multiplayer testing flow, and launch handoff checklist.
 - Server bootstrap script (`Main.server`) that auto-creates required remotes and wires weather, lightning hazards, wet-surface updates, serpent spawn checks, and monetization service initialization.
 - Initial server weather pool config module for fast tuning of weather pacing.
+
+### Fixed
+- Prevented repeated warning spam and improved template retry behavior in `LightningSerpentController` when the serpent template is missing.
+- Added player cleanup and safer receipt fulfillment fallback behavior in `StormSeedService` to avoid stuck purchase processing paths.
 
 ### Changed
 - Hardened weather authority logic with input validation, server timestamp payloads, and state accessors.
