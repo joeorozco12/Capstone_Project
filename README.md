@@ -9,3 +9,7 @@ Programmed with the ESP8266 Thing by Sparkfun which includes applications on PID
 
 .. image:: https://mybinder.org/badge_logo.svg
  :target: https://mybinder.org/v2/gh/joeorozco12/Capstone_Project/master
+
+## Configuration
+
+Launch-blocking configuration templates have been added for local, staging, and production environments. See `CONFIGURATION.md` plus the example templates in `.env.example`, `backend/.env.example`, `android-app/local.properties.example`, and `firmware/config/firmware.config.example`.
